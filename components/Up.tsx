@@ -19,7 +19,6 @@ const Container = styled.div`
   overflow        : hidden   ;
 
 `
-
 const BaseBar = styled.div`
   background    : gray       ;
 
@@ -49,11 +48,16 @@ const ScrollingBar = styled.div.attrs((props: {elm: string}) => props)`
 
   position      : absolute   ;
 
-  margin-left   : ${props => props.elm || "0em"}  ;
-
   border-radius : 10em       ;
 
   z-index       : 0          ;
+
+  &.slide{
+
+    transition  : 0.5s       ;
+    margin-left : ${props => props.elm}  ;
+    
+  }
 `
 const ElementBar = styled.p`
   width         : 7em        ;
@@ -83,7 +87,7 @@ export class BarPdd extends Component<any>{
   render(): ReactNode {
     return(
       <BaseBar>
-        <ScrollingBar elm={String(this.props.locage*7)+"em"} />
+        <ScrollingBar elm={String(this.props.locage*7)+"em"} className="slide" />
         <ElementBar onClick={x => this.props.setLocage(0)}>programs</ElementBar>
         <ElementBar onClick={x => this.props.setLocage(1)}>drawings</ElementBar>
         <ElementBar onClick={x => this.props.setLocage(2)}>desing</ElementBar>
