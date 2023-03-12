@@ -34,28 +34,21 @@ function HomePage({val_locage}){
 
   const [locage , setLocage] = useState(val_locage)
 
-  console.log(locage);
+  return (
+    <div style={{display:"flex"}}>
 
-  
-  return <div style={{display:"flex"}}>
+      <ContainerUp>
+        <Logo/>
+        <BarPdd locage={locage} setLocage={setLocage}/>
+      </ContainerUp>
 
-    <Head>
-      <title>WebSite</title>
-      <link rel="preconnect" href="https://fonts.googleapis.com"></link>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poiret+One&display=swap"></link>
-    </Head>
+      <>
+        {/* <Cards/> */}
+      </>
+      
 
-    <ContainerUp>
-      <Logo/>
-      <BarPdd locage={locage} setLocage={setLocage}/>
-    </ContainerUp>
-
-    <>
-      {/* <Cards/> */}
-    </>
-    
-
-  </div>
+    </div>
+  )
 }
 
 export default HomePage
