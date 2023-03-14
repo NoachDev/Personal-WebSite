@@ -3,6 +3,11 @@ import React, {createContext} from 'react'
 import Head from 'next/head'
 
 const GlobalStyle = createGlobalStyle`
+  body{
+    margin : 0em;
+    background : #222222;
+  }
+
   @font-face {
     font-family: Poiret One;
     src: url('/fonts/PoiretOne.ttf');

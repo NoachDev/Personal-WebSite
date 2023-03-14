@@ -5,11 +5,13 @@ import Image from "next/image"
 import iconl from "../public/iconLogo_250.jpg"
 
 const Container = styled.div`
-  width           : 9em      ;
-  height          : 9em      ;
+  width           : 10em  ;
+  height          : 10em  ;
 
-  border-syle     : solid    ;
+  border-style    : solid    ;
   border-radius   : 100%     ;
+  border-color    : #C54242  ;
+
   
   display         : flex     ;
 
@@ -20,10 +22,10 @@ const Container = styled.div`
 
 `
 const BaseBar = styled.div`
-  background    : gray       ;
+  background    : white      ;
 
-  width         : 21em       ;
-  height        : 1.4em      ;
+  width         : 30em       ;
+  height        : 1.6em      ;
 
   margin-top    : 2.5em      ;
   align-items   : center     ;
@@ -38,13 +40,13 @@ const BaseBar = styled.div`
 
 `
 const ScrollingBar = styled.div.attrs((props: {elm: string}) => props)`
-  background    : white      ;
+  background    : #95BEFE    ;
 
-  width         : 7em        ;
-  height        : 1.3em      ;
+  width         : 9.8em      ;
+  height        : 1.4em      ;
 
   border        : 1px solid  ;
-  border-color  : gray       ;
+  border-color  : white      ;
 
   position      : absolute   ;
 
@@ -60,10 +62,10 @@ const ScrollingBar = styled.div.attrs((props: {elm: string}) => props)`
   }
 `
 const ElementBar = styled.p`
-  width         : 7em        ;
-  height        : 1.2em        ;
+  width         : 10em       ;
+  height        : 1.4em      ;
 
-  margin-top    : auto       ;
+  margin-top    : 1em        ;
 
   text-align    : center     ;
   text-justify  : center     ;
@@ -77,7 +79,7 @@ export class Logo extends Component<any>{
   render(): ReactNode {
     return(
       <Container>
-          <Image src={iconl} alt="" style={{width : "9em", height:"9em"}}></Image>
+          <Image src={iconl} alt="" style={{width : "11.25em", height:"11.25em"}}></Image>
       </Container>
     )
   }
@@ -87,10 +89,10 @@ export class BarPdd extends Component<any>{
   render(): ReactNode {
     return(
       <BaseBar>
-        <ScrollingBar elm={String(this.props.locage*7)+"em"} className="slide" />
+        <ScrollingBar elm={String(this.props.locage*10)+"em"} className="slide" />
         <ElementBar onClick={x => this.props.setLocage(0)}>programs</ElementBar>
         <ElementBar onClick={x => this.props.setLocage(1)}>drawings</ElementBar>
-        <ElementBar onClick={x => this.props.setLocage(2)}>desing</ElementBar>
+        <ElementBar onClick={x => this.props.setLocage(2)}>ux/ui</ElementBar>
       </BaseBar>
     )
   }
