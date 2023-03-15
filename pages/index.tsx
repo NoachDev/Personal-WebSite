@@ -1,11 +1,11 @@
 import Head from "next/head"
-import React, { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Logo, BarPdd } from "../components/Up";
-import Card from "../components/cards";
+import {Card, DataCard} from "../components/cards";
 import styled from "styled-components";
 
 const ContainerUp = styled.div`
-  height          : 21.5em      ;
+  height          : 18em      ;
   width           : auto      ;
 
   padding-inline  : 10em      ;
@@ -48,19 +48,30 @@ export async function getServerSideProps(context){
   }
 }
 
-function uploadCards(locage, index){
-  // to api : feth data 
-  
-  return []
-}
-
 function HomePage({val_locage, elements}){
   
   const [locage , setLocage] = useState(val_locage)
   const [cardsElments, setCards ] = useState([])
+  const [image, setImage] = useState(undefined)
+  const showData = useRef();
+  
+  function uploadCards(){
+    // to do => api : feth data 
+    // <Card openData={openData} image={...}/>
+    return []
+  }
+
+  function openData(image){
+    // setImage(image);
+
+    if (showData.current.state.visibility == "hidden"){
+      showData.current.setState(({visibility : "visible"}))
+    }
+    
+  }
 
   useEffect(() => {
-    setCards(locage in elements ? elements[locage] : elements[locage] = uploadCards(locage, 0))
+    setCards(locage in elements ? elements[locage] : elements[locage] = uploadCards())
     }
   )
 
@@ -74,8 +85,10 @@ function HomePage({val_locage, elements}){
 
       <ContainerDown>
         {cardsElments}
+
       </ContainerDown>
       
+      <DataCard ref={showData} image={image}/>
 
     </div>
   )
