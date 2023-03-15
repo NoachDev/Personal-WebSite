@@ -5,8 +5,8 @@ import Image from "next/image"
 import iconl from "../public/iconLogo_250.jpg"
 
 const Container = styled.div`
-  width           : 10em  ;
-  height          : 10em  ;
+  width           : 8em  ;
+  height          : 8em  ;
 
   border-style    : solid    ;
   border-radius   : 100%     ;
@@ -25,9 +25,9 @@ const BaseBar = styled.div`
   background    : white      ;
 
   width         : 30em       ;
-  height        : 1.6em      ;
+  height        : 1.3em      ;
 
-  margin-top    : 2.5em      ;
+  margin-top    : 2em      ;
   align-items   : center     ;
 
   display       : flex       ;
@@ -43,7 +43,7 @@ const ScrollingBar = styled.div.attrs((props: {elm: string}) => props)`
   background    : #95BEFE    ;
 
   width         : 9.8em      ;
-  height        : 1.4em      ;
+  height        : 1.1em      ;
 
   border        : 1px solid  ;
   border-color  : white      ;
@@ -63,9 +63,9 @@ const ScrollingBar = styled.div.attrs((props: {elm: string}) => props)`
 `
 const ElementBar = styled.p`
   width         : 10em       ;
-  height        : 1.4em      ;
+  height        : 1.1em      ;
 
-  margin-top    : 1em        ;
+  margin-top    : 0.7em      ;
 
   text-align    : center     ;
   text-justify  : center     ;
@@ -79,7 +79,7 @@ export class Logo extends Component<any>{
   render(): ReactNode {
     return(
       <Container>
-          <Image src={iconl} alt="" style={{width : "11.25em", height:"11.25em"}}></Image>
+          <Image src={iconl} alt="" style={{width : "8em", height:"8em"}}></Image>
       </Container>
     )
   }
