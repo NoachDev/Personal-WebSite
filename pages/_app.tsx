@@ -13,6 +13,17 @@ const GlobalStyle = createGlobalStyle`
     src: url('/fonts/PoiretOne.ttf');
     font-style: normal;
   }
+  @font-face {
+    font-family: Confortaa;
+    src: url('/fonts/Comfortaa-Light.ttf');
+    font-style: light;
+  }
+
+  @font-face {
+    font-family: Junge;
+    src: url('/fonts/Junge.ttf');
+    font-style: normal;
+  }
 
 `
 export const ctxTheme = createContext(null)
