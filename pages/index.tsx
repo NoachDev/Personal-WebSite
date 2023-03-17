@@ -1,8 +1,10 @@
-import Head from "next/head"
 import { useEffect, useRef, useState } from "react"
 import { Logo, BarPdd } from "../components/Up";
 import {Card, DataCard} from "../components/cards";
 import styled from "styled-components";
+
+import Login from "../components/login";
+import { useRouter } from "next/router";
 
 const ContainerUp = styled.div`
   height          : 18em      ;
@@ -49,11 +51,14 @@ export async function getServerSideProps(context){
 }
 
 function HomePage({val_locage, elements}){
-  
   const [locage , setLocage] = useState(val_locage)
   const [cardsElments, setCards ] = useState([])
   const [image, setImage] = useState(undefined)
-  const showData = useRef();
+  
+  const showData = useRef(null);
+  const showLogin = useRef(null);
+
+  const router = useRouter();
   
   function uploadCards(){
     // to do => api : feth data 
@@ -62,12 +67,15 @@ function HomePage({val_locage, elements}){
   }
 
   function openData(image){
-    // setImage(image);
-
     if (showData.current.state.visibility == "hidden"){
+      setImage(image);
       showData.current.setState(({visibility : "visible"}))
     }
     
+  }
+
+  function chatPage(){
+    showLogin.current.showSelf()
   }
 
   useEffect(() => {
@@ -88,7 +96,9 @@ function HomePage({val_locage, elements}){
 
       </ContainerDown>
       
-      <DataCard ref={showData} image={image}/>
+      <Login ref={showLogin} router={router}/>
+      <DataCard ref={showData} image={image} toPage={chatPage}/>
+
 
     </div>
   )

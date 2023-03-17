@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { Component, ReactNode } from "react"
+import React, { Component, ReactNode } from "react"
 import styled from "styled-components"
 
 import info from "../public/info.svg"
@@ -42,7 +42,7 @@ const Glass = styled.div.attrs((props : {view : string}) => props)`
 
   background-image    : radial-gradient(
     farthest-corner at 100% 0%,
-    rgba(255, 255, 255, 0.5) 0%,
+    rgba(255, 255, 255, 0.7) 0%,
     transparent
   );
 
@@ -88,10 +88,10 @@ const Glass = styled.div.attrs((props : {view : string}) => props)`
 
   #image{
     width             : 60%               ;
-    background        : gray              ;
+    background        : black             ;
     height            : auto              ;
     border-radius     : 0em 1em 1em 0em   ;
-    border            : 1px solid transparent  ;
+    object-fit        : contain           ;
 
   }
 
@@ -137,9 +137,9 @@ const Glass = styled.div.attrs((props : {view : string}) => props)`
 export class Card extends Component<any>{
   render(): ReactNode {
     return(
-      <Container>
-        <Image src={info} id="info" alt="" onClick={x => this.props.openData(this.props.image)}/>
-        <Image src={this.props.image} id="drawing" alt="" onClick={x => this.props.openData(this.props.image)}/>
+      <Container onClick={x => this.props.openData(this.props.image)}>
+        <Image src={info} id="info" alt=""/>
+        <Image src={this.props.image} id="drawing" alt="" />
         
       </Container>
     )
@@ -154,6 +154,7 @@ export class DataCard extends Component<any, {visibility: string}>{
       visibility : "hidden"
     }
   }
+
   render(): ReactNode {
     return(
       <Glass view={this.state.visibility}>
@@ -169,7 +170,7 @@ export class DataCard extends Component<any, {visibility: string}>{
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat
           </p>
 
-          <div id="down">
+          <div id="down" onClick={this.props.toPage}>
             <Image src={buy} alt="" id="iconBuy"/>
 
             <p id="textBuy">
