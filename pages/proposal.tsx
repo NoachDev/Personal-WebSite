@@ -3,6 +3,8 @@ import noUser from "../public/user.svg"
 import Image from "next/image"
 import { useRouter } from "next/router"
 
+import send from "../public/send-blue.svg"
+
 const Header = styled.div`
   display           : flex                          ;
   flex-direction    : row                           ;
@@ -80,7 +82,7 @@ const Subimit = styled.div`
     font-size       : 13px                          ;
 
     &:hover{
-      // color         : blue;
+      color         : #95BEFE;
     }
 
   }
@@ -90,8 +92,7 @@ const Write = styled.div`
   width : 100%;
   height: 100%;
 
-  background : white;
-
+  background : #2E2E2E;
 
   display : flex;
   flex-direction : column;
@@ -103,9 +104,6 @@ const Write = styled.div`
     width : 100%;
     height : 3%;
     background : gray;
-    
-    
-    
   }
   
   #input{
@@ -113,17 +111,49 @@ const Write = styled.div`
     height : 90% ;
 
     border : 0px solid;
-    background : white;
+    background : inherit;
 
   }
 `
 const Notes = styled.div`
-  height            : 10em                          ;
+  height                : 10em                  ;
 
-  background        : #292d32                       ;
+  background            : #292d32               ;
 
-  border-radius     : 0.5em                         ;
-  overflow          : hidden                        ;
+  border-radius         : 0.5em                 ;
+  overflow              : hidden                ;
+
+  display               : grid                  ;
+  grid-template-rows    : 20% 1fr               ;
+
+  gap                   : 1.2em                 ;
+
+  #warning{   
+    text-align          : center                ;
+    text-justify        : center                ;
+                
+    padding-top         : 1.5%                  ;
+                
+    font-size           : 15px                  ;
+    font-family         : Junge                 ;
+                
+    background          : #FFDA88               ;
+                
+  }             
+              
+  #text{              
+    margin-inline       : 2em                   ;
+
+    text-indent         : 12px                  ;
+    line-height         : 1.5                   ;
+    word-spacing        : 2px                   ;
+    letter-spacing      : 1px                   ;
+
+    font-family         : Junge                 ;
+    font-size           : 13px                  ;
+
+    color               : white                 ;
+  }
   
 
 `
@@ -138,7 +168,6 @@ const Top = styled.div`
   }
 
 `
-
 const Layout = styled.div`
   margin-inline     : 6em                           ;
   position          : absolute                      ;
@@ -176,6 +205,8 @@ function Project(){
         </Header>
         
         <Notes>
+          <label id = "warning">Warning</label>
+          <label id="text" >Please. Take a care with what you write, because this proposal gonna be reading and analyzed so write in a way that conveys full understanding of what you whant.</label>
         </Notes>
 
       </Top>
@@ -191,8 +222,8 @@ function Project(){
         </Write>
 
         <div id="send" onClick={() => router.push("/chats")}>
-          {/* <Image/> */}
           <label> send the proposal</label>
+          <Image src={send} alt = "image" style={{width : "auto", height: " 100%", marginLeft : "0.5em"}}/>
         </div>
 
       </Subimit>
