@@ -1,5 +1,14 @@
 module.exports = {
+  reactStrictMode: true,
+  
+  swcMinify: true,
+
+  compiler: {
+    styledComponents: true,
+  },
+
   async headers() {
+
     return [
       {
         source: "/fonts/PoiretOne.ttf",
@@ -13,14 +22,3 @@ module.exports = {
     ];
   },
 };
-
-
-const nextConfig = {
-  reactStrictMode: true,
-  swcMinify: true,
-  compiler: {
-    styledComponents: true,
-  },
-};
-
-module.exports = nextConfig;

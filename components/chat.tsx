@@ -49,7 +49,7 @@ const PaperContainer = styled.div`
   display         : grid                    ;
 
   grid-template-columns  : repeat(2, 1fr)   ;
-  grid-template-row     : repeat(2, 1fr)    ;
+  grid-template-rows     : repeat(2, 1fr)    ;
 
   column-gap      : 1em                     ;
   row-gap         : 1em                     ;
