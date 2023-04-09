@@ -9,7 +9,6 @@ import nodeNew from "../public/dashboard/add-circle.svg"
 import toLeft from "../public/dashboard/left-align.svg"
 import toRight from "../public/dashboard/right-align.svg"
 
-
 const Node = styled.div`
   background: #2E2E2E;
 
@@ -223,7 +222,6 @@ const Content = styled.div`
   }
 
 `
-
 const Delete = styled.div`
   width : 30%;
   height: 25%;
@@ -287,13 +285,18 @@ const Delete = styled.div`
 
 `
 
-function DashBoard(){
+export async function getServerSideProps(ctx){
+
+  return {
+    props : {
+      nodeContents : await fetch(`${process.env.NEXT_URL}/api/images`).then(x => x.json())
+    }
+  }
+}
+
+function DashBoard({nodeContents}){
 
   const admin_test = true;
-  const nodeContents_test = {
-    1 : { id : 1, name : "test1", locage : "drawings", content : "abcfks jbdskajdb sjkdi sjbvdusbdis", image : "test.jpg"},
-    2 : { id : 1, name : "test2", locage : "programs", content : "diusvdi disudgsid sdvsiudshd sdcsd shdsvd", image : "abcd.png"}
-  };
 
   const router = useRouter();
 
@@ -304,9 +307,9 @@ function DashBoard(){
   const [filterName, setFName] = useState(null);
   const [filterLocage, setFLocal] = useState(null);
 
-  const [nodes, setNodes] = useState(Object.keys(nodeContents_test).map( k => {
-      const vals =  nodeContents_test[k]
-      return createNode(k, vals.id, vals.name, vals.locage, vals.content, vals.image)
+  const [nodes, setNodes] = useState(Object.keys(nodeContents).map( k => {
+      const vals =  nodeContents[k]
+      return createNode(k, vals.id, vals.name, vals.locage, vals.content, vals.src)
     }
   ));
 
@@ -332,7 +335,7 @@ function DashBoard(){
 
       outAll()
       setCShow(true)
-      setVal({...nodeContents_test[elmId], key : elmId})
+      setVal({...nodeContents[elmId], key : elmId})
 
     }
     
@@ -353,7 +356,7 @@ function DashBoard(){
 
   function filterNode(nodes : JSX.Element[]){
 
-    const getBy = (key, val, src) => src.filter(x => nodeContents_test[x.key][key].includes(val))
+    const getBy = (key, val, src) => src.filter(x => nodeContents[x.key][key].includes(val))
 
     let ret = [];
 
