@@ -9,6 +9,8 @@ import nodeNew from "../public/dashboard/add-circle.svg"
 import toLeft from "../public/dashboard/left-align.svg"
 import toRight from "../public/dashboard/right-align.svg"
 
+import { nodeInterface } from "../models/node"
+
 const Node = styled.div`
   background: #2E2E2E;
 
@@ -285,35 +287,33 @@ const Delete = styled.div`
 
 `
 
-export async function getServerSideProps(ctx){
-
+export async function getStaticProps(){
   return {
     props : {
-      nodeContents : await fetch(`${process.env.NEXT_URL}/api/images`).then(x => x.json())
+      nodeContents : await fetch(`${process.env.NEXT_URL}/api/images`, {method : "GET", headers : {Accept: 'application/json'}}).then(res => res.json()).catch(err => {return {}})
     }
   }
 }
 
 function DashBoard({nodeContents}){
-
+  
   const admin_test = true;
 
   const router = useRouter();
 
   const [cntShow, setCShow] = useState(false);
   const [delShow, setDShow] = useState(false);
+
+  const [loadingContent, setLContent] = useState(false);
   
   const [filterPos, setPos ] = useState(false);
   const [filterName, setFName] = useState(null);
   const [filterLocage, setFLocal] = useState(null);
+  
+  const [nodes, setNodes] = useState(Object.keys(nodeContents).map( k => createNode(k, nodeContents[k])));
+  const [removeNode, setRNode] = useState([])
 
-  const [nodes, setNodes] = useState(Object.keys(nodeContents).map( k => {
-      const vals =  nodeContents[k]
-      return createNode(k, vals.id, vals.name, vals.locage, vals.content, vals.src)
-    }
-  ));
-
-  const defaultVal = {id : "new", image : "Nothing Here", name : "", content: "", locage : null} ;
+  const defaultVal = {key : "", _id : "new", src : "Nothing Here", name : "", content: "", locage : "ux/ui"};
   const [changeVal, setVal] = useState(defaultVal);
 
   const nodeAdd = <Image onClick={() => { outAll(); setCShow(true)}} key={0} src={nodeNew} alt = "SVG Repo" style={{width : "2.5em", height : "2.5em", alignSelf : "center"}}/>;
@@ -322,34 +322,29 @@ function DashBoard({nodeContents}){
     setCShow(false)
     setDShow(false)
     setVal(defaultVal)
+    setRNode([])
+
   }
 
-  function LoadContent(e : any){
-    
-    e.preventDefault()
+  function LoadContent(e : any, key : string, id : string){
     const isClose = e.target["getAttribute"]("id") == "close";
     
     if (!isClose){
-      const element : any = e.currentTarget;
-      const elmId = element["getAttribute"]("id");
-
       outAll()
+      setVal({...nodeContents[key], id : id, key : key})
       setCShow(true)
-      setVal({...nodeContents[elmId], key : elmId})
-
     }
-    
     
   }
 
-  function createNode(key : string, id: string, name : string, locage : string, content : string, image : string ){ 
+  function createNode(key : string, nodeVal : nodeInterface){ 
     return (
-      <Node key={key} id={String(key)} onClick={e => LoadContent(e) }>
-        <Image alt="" src={close} onClick={() => setDShow(true) } id="close"/>
-        <label key={name} >{name}</label>
-        <label key={locage} >{locage}</label>
-        <label key={2} >{content}</label>
-        <label key={3} >{image}</label>
+      <Node key={key} id={nodeVal._id} onClick={e => LoadContent(e, key, nodeVal._id)}>
+        <Image alt="" src={close} onClick={() => {setDShow(true); setRNode([key, nodeVal._id])} } id="close"/>
+        <label key={nodeVal.name} >{nodeVal.name}</label>
+        <label key={nodeVal.locage} >{nodeVal.locage}</label>
+        <label key={2} >{nodeVal.content}</label>
+        <label key={3} >{nodeVal.src}</label>
       </Node>
     )
   }
@@ -374,7 +369,11 @@ function DashBoard({nodeContents}){
 
     return nodes
   }
-  
+
+  function updateContent(value, key){
+    setVal( prev => { return { ...prev, [key] : value} })
+  }
+
   if (!admin_test){
     useEffect(() => {
       router.push("/")
@@ -383,27 +382,86 @@ function DashBoard({nodeContents}){
     return <></>
   }
 
+  useEffect(() => {
+    
+    if (loadingContent){
+      const {key, ...newContent} = changeVal
+
+      fetch("/api/images", { method : "POST", headers : {Accept: 'application/json'}, body : JSON.stringify(newContent)}).then( function(){
+
+        if (newContent._id == "new"){
+          nodeContents[nodes.length + 1] = newContent;
+          setNodes(prev => [...prev, createNode(String(nodes.length + 1), newContent)]);
+
+        }
+        else{
+          nodeContents[key] = newContent;
+  
+          setNodes( prev => {
+              prev[key] = createNode(key, newContent )
+              return [...prev]
+            }
+          )
+
+        }
+
+        outAll()
+
+      }).catch( function(){ console.log("err post")})
+      
+            
+      setLContent(false)
+    }
+
+  }, [loadingContent])
+
+  useEffect(() => {
+    if (removeNode.length == 3){
+      
+      fetch("/api/images", { method : "DELETE", headers : {Accept: 'application/json'}, body : JSON.stringify({id : removeNode[1]})}).then( function(){
+          setNodes(prev => prev.filter(x => x.key != removeNode[0]))
+          outAll()
+        }
+      )
+    }
+
+  }, [removeNode])
+
+  useEffect(() => {
+    if (cntShow){
+      const elements = document.getElementById("contentNodes").childNodes
+    
+      const top = elements[1].childNodes
+      
+      top[0]["defaultValue"] = changeVal.name
+      top[1]["value"] = changeVal.locage ?? 1
+  
+      elements[2]["value"] = changeVal.content
+    }
+
+  }, [changeVal, cntShow])
+
   return <div style={{display : "flex"}}>
-    <Content style={{visibility : cntShow ? "visible" : "hidden", display : cntShow ? "grid" : "none"}}>
+    <Content id="contentNodes" style={{visibility : cntShow ? "visible" : "hidden", display : cntShow ? "grid" : "none"}}>
       <div id="image">
-        <input type="file" accept="image/*" id="imageInput" multiple={true} style={{display:"none"}}></input>
-        <label onClick={() => document.getElementById("imageInput").click()}>{changeVal.image}</label>
+        <input type="file" accept="image/*" id="imageInput" multiple={true} style={{display:"none"}} onChange={() => {}}></input>
+        <label onClick={() => document.getElementById("imageInput").click()}>{changeVal.src}</label>
       </div>
 
       <div id="top">
-        <input type="text" placeholder="Name :" value={changeVal.name} onChange={() => {}} id={"inputName"}/>
-        <select defaultValue={changeVal.locage ?? 1} onChange={() => {}}>
-          <option value={0}>drawings</option>
-          <option value={1}>ux/ui</option>
-          <option value={2}>programs</option>
+        <input type="text" placeholder="Name :" onChange={e => updateContent(e.target.value, "name")}id={"inputName"}/>
+        <select onChange={e => updateContent(e.target.value, "locage")}>
+          <option value={"drawings"}>drawings</option>
+          <option value={"ux/ui"}>ux/ui</option>
+          <option value={"programs"}>programs</option>
         </select>
       </div>
 
-      <textarea id="middle" value={changeVal.content} onChange={() => {}}/>
+      <textarea id="middle" onChange={e => updateContent(e.target.value, "content")}/>
 
       <div id="bottom">
         <button onClick={outAll}>cancel</button>
-        <button style={{background : "#95fea1", borderColor : "#95fea1", color : "black"}}>save</button>
+        <button onClick={() => setLContent(true)} style={{background : "#95fea1", borderColor : "#95fea1", color : "black"}}>save</button>
       </div>
     </Content>
 
@@ -411,7 +469,7 @@ function DashBoard({nodeContents}){
       <label id="info"> You realy whant delete this node ? All information will be lost</label>
       <div id="buttons">
         <button onClick={outAll}>cancel</button>
-        <button style={{background : "#D93434"}}>delete</button>
+        <button onClick={() => setRNode(prev => [...prev, true])} style={{background : "#D93434"}}>delete</button>
       </div>
     </Delete>
 
