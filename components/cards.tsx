@@ -139,7 +139,7 @@ export class Card extends Component<any>{
     return(
       <Container onClick={x => this.props.openData(this.props.image)}>
         <Image src={info} id="info" alt=""/>
-        <Image src={this.props.image} id="drawing" alt="" />
+        <Image src={this.props.image} width={500} height={500} id="drawing" alt="" />
         
       </Container>
     )

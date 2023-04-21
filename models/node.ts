@@ -1,21 +1,25 @@
 import { ObjectId } from "mongodb"
+import mongoose, { Schema, model } from "mongoose"
 
-import { Schema, model } from "mongoose"
+export interface nodeInterface{
+  _id : string,
+  path : string,
+  src : string,
+  locage : string,
+  name : string,
+  content: string,
+  file : {"file-type" : string, name : string, buffer : any},
+}
 
 const node = new Schema({
   _id : ObjectId,
+  path : String, 
   src : String,
-  locage : Number,
+  locage : String,
   name : String,
   content : String
 })
 
-export interface nodeInterface{
-  _id : string,
-  src : string,
-  name : string,
-  content: string,
-  locage : string | number
-}
 
-export const nodeModel = () => model("images", node)
+mongoose.models = {}
+export const nodeModel = model("images", node)

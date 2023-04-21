@@ -1,114 +1,78 @@
-import connect_public from "./client"
 import mongoose from "mongoose"
-import { dbAdminHomeConnect } from "../../lib/dbConnect"
+import { HomeAdminConnect } from "../../middleware/mongoose"
 
 import {nodeInterface, nodeModel} from "../../models/node"
-import { ApiError } from "next/dist/server/api-utils"
+import { NextApiRequest, NextApiResponse } from "next"
+import { removeImage, uploadImage } from "../../lib/buckets"
 
-const locageStr = (l : number) => {
-  switch (l){
-    case 0:
-      return "drawings"
-    case 1:
-      return "ux/ui"
-    case 2:
-      return "programs"
-  }
-}
 
-const locageInt = (l : string) => {
-  switch (l){
-    case "drawings":
-      return 0
-    case "ux/ui":
-      return 1
-    case "programs":
-      return 2
-  }
-}
+export async function getNode(){
 
-async function getNode(res){
-  
   let data = {}
-
-  try {
-    const result = await connect_public()
-    
-    result.forEach((val, index) => data[index] = {...val, locage : locageStr(val["locage"])})
-
-    res.json(data)
-  }
   
-  catch(e){
-    res.json({})
-    throw new ApiError(500, "error on try connect with Home, User : public")
+  const result : Array<Object>= await nodeModel.find({}).exec().then(x => x.map(val => val["_doc"]))
 
-  }
+  result.forEach((val, index) => { 
+    
+    data[index] = {...val, _id : val["_id"].toJSON() }
+
+  })
+
+  return data
 
 }
 
-export async function addNode(res, content : nodeInterface) {
-  try{
-    await dbAdminHomeConnect();
-  }
-  catch{
-    throw new ApiError(500, "connect Db Home , User : Admin")
-  }
-
-  const {_id, ...schema} = content;
+export async function addNode(content : nodeInterface) {
+  const {_id, file, ...schema} = content;
+  const document = _id == "new" ? new nodeModel({_id : new mongoose.Types.ObjectId().toHexString(), src : "", path : ""}) : await nodeModel.findById(content._id).exec();
   
-  if (_id == "new"){
-    await nodeModel().create({...schema, locage : locageInt(String(schema.locage)), _id : new mongoose.Types.ObjectId().toHexString()});
-  }
+  const path = file.name ? `${schema.locage}/${file.name}` : ""
   
-  else{
-    const document = await nodeModel().findById(content._id).exec();
+  if (file.name && document.path != path){
+    const bufferData = Buffer.from(file["buffer"].data)
 
-    document.src = schema.src
-    document.name = schema.name
-    document.content = schema.content
-    document.locage = locageInt(schema.locage.toString())
-    
-    await document.save();
+    if (document.src.length > 0){
+      removeImage(document.path)
+    }
+
+    document.path = path
+    document.src = await uploadImage(bufferData, file["file-type"], document.path)
     
   }
 
-  return
+  document.name = schema.name
+  document.content = schema.content
+  document.locage = schema.locage
+    
+    
+  await document.save();
+
+}
   
+export async function removeNode(id : string, path : string){
+  await removeImage(path)
+  await nodeModel.deleteOne({_id : id}).exec()
+
 }
 
-async function removeNode(res : any, id : string){
-  try{
-    await dbAdminHomeConnect();
-  }
-  catch{
-    throw new ApiError(500, "connect Db Home , User : Admin")
+async function handler(req : NextApiRequest, res : NextApiResponse ){
 
-  }
-
-  await nodeModel().deleteOne({_id : id}).exec()
-  
-  return
-}
-
-async function handler(req, res){
   res.setHeader('Cache-Control', 's-maxage=86400');
+  const body = JSON.parse(req.body)
 
-  if (req.method == "GET"){
-    await getNode(res)
-  }
-  
-  else if (req.method == "POST"){
-    await addNode(res, JSON.parse(req.body) )
-  }
+  if (req.method == "POST"){
+    await addNode(body)
 
+    res.status(200)
+    res.end()
+    
+  }
   else if (req.method == "DELETE"){
-    await removeNode(res, JSON.parse(req.body)["id"])
+    await removeNode(body["id"], body["path"])
+
+    res.status(200)
+    res.end()
   }
-
-  res.status(200);
-  res.end()
-
 }
 
-export default handler
+export default HomeAdminConnect(handler)

@@ -11,6 +11,9 @@ import toRight from "../public/dashboard/right-align.svg"
 
 import { nodeInterface } from "../models/node"
 
+import { getNode } from "./api/images"
+import { HomePublicConnect } from "../middleware/mongoose"
+
 const Node = styled.div`
   background: #2E2E2E;
 
@@ -286,17 +289,18 @@ const Delete = styled.div`
   }
 
 `
-
-export async function getStaticProps(){
+export async function getServerSideProps(){
+  
   return {
     props : {
-      nodeContents : await fetch(`${process.env.NEXT_URL}/api/images`, {method : "GET", headers : {Accept: 'application/json'}}).then(res => res.json()).catch(err => {return {}})
+      nodeContents : await HomePublicConnect(getNode)(null, null).then((x : Object) => x, () => {}) ?? {}
+
     }
   }
 }
 
 function DashBoard({nodeContents}){
-  
+
   const admin_test = true;
 
   const router = useRouter();
@@ -304,8 +308,6 @@ function DashBoard({nodeContents}){
   const [cntShow, setCShow] = useState(false);
   const [delShow, setDShow] = useState(false);
 
-  const [loadingContent, setLContent] = useState(false);
-  
   const [filterPos, setPos ] = useState(false);
   const [filterName, setFName] = useState(null);
   const [filterLocage, setFLocal] = useState(null);
@@ -313,11 +315,12 @@ function DashBoard({nodeContents}){
   const [nodes, setNodes] = useState(Object.keys(nodeContents).map( k => createNode(k, nodeContents[k])));
   const [removeNode, setRNode] = useState([])
 
-  const defaultVal = {key : "", _id : "new", src : "Nothing Here", name : "", content: "", locage : "ux/ui"};
+  const defaultVal = {key : "", _id : "new", path : "", src : "Nothing Here", name : "", content: "", locage : "ux|ui", file : {"file-type" : "", name : "", buffer : ""}};
   const [changeVal, setVal] = useState(defaultVal);
 
   const nodeAdd = <Image onClick={() => { outAll(); setCShow(true)}} key={0} src={nodeNew} alt = "SVG Repo" style={{width : "2.5em", height : "2.5em", alignSelf : "center"}}/>;
 
+  
   function outAll(){
     setCShow(false)
     setDShow(false)
@@ -331,7 +334,7 @@ function DashBoard({nodeContents}){
     
     if (!isClose){
       outAll()
-      setVal({...nodeContents[key], id : id, key : key})
+      setVal(prev =>{ return { ...prev, ...nodeContents[key], id : id, key : key}})
       setCShow(true)
     }
     
@@ -344,7 +347,7 @@ function DashBoard({nodeContents}){
         <label key={nodeVal.name} >{nodeVal.name}</label>
         <label key={nodeVal.locage} >{nodeVal.locage}</label>
         <label key={2} >{nodeVal.content}</label>
-        <label key={3} >{nodeVal.src}</label>
+        <label key={3} >{String(nodeVal.src)}</label>
       </Node>
     )
   }
@@ -374,6 +377,40 @@ function DashBoard({nodeContents}){
     setVal( prev => { return { ...prev, [key] : value} })
   }
 
+  function updateNode(key : string, content : nodeInterface){
+    if (content._id == "new"){
+      nodeContents[nodes.length + 1] = content;
+      setNodes(prev => [...prev, createNode(String(nodes.length + 1), content)]);
+    }
+    
+    else{
+      nodeContents[key] = content;
+  
+      setNodes( prev => {           
+          prev[key] = createNode(key, content )
+          return [...prev]
+        }
+      )
+    }
+  
+    outAll()
+  }
+
+  function postNode(){
+    const {key, ...newContent} = changeVal;
+
+    const apiNodes = new XMLHttpRequest()
+
+    apiNodes.onreadystatechange = function(){
+      if (this.readyState == 4 && this.status == 200){
+        updateNode(key, newContent)
+      }
+    }
+
+    apiNodes.open("POST", "/api/images")
+    apiNodes.send(JSON.stringify(newContent))
+  }
+
   if (!admin_test){
     useEffect(() => {
       router.push("/")
@@ -383,43 +420,11 @@ function DashBoard({nodeContents}){
   }
 
   useEffect(() => {
-    
-    if (loadingContent){
-      const {key, ...newContent} = changeVal
-
-      fetch("/api/images", { method : "POST", headers : {Accept: 'application/json'}, body : JSON.stringify(newContent)}).then( function(){
-
-        if (newContent._id == "new"){
-          nodeContents[nodes.length + 1] = newContent;
-          setNodes(prev => [...prev, createNode(String(nodes.length + 1), newContent)]);
-
-        }
-        else{
-          nodeContents[key] = newContent;
-  
-          setNodes( prev => {
-              prev[key] = createNode(key, newContent )
-              return [...prev]
-            }
-          )
-
-        }
-
-        outAll()
-
-      }).catch( function(){ console.log("err post")})
-      
-            
-      setLContent(false)
-    }
-
-  }, [loadingContent])
-
-  useEffect(() => {
     if (removeNode.length == 3){
       
-      fetch("/api/images", { method : "DELETE", headers : {Accept: 'application/json'}, body : JSON.stringify({id : removeNode[1]})}).then( function(){
+      fetch("/api/images", { method : "DELETE", headers : {Accept: 'application/json'}, body : JSON.stringify({id : removeNode[1], path : nodeContents[removeNode[0]["path"]]})}).then( function(){
           setNodes(prev => prev.filter(x => x.key != removeNode[0]))
+          delete nodeContents[removeNode[0]]
           outAll()
         }
       )
@@ -433,7 +438,7 @@ function DashBoard({nodeContents}){
     
       const top = elements[1].childNodes
       
-      top[0]["defaultValue"] = changeVal.name
+      top[0]["value"] = changeVal.name
       top[1]["value"] = changeVal.locage ?? 1
   
       elements[2]["value"] = changeVal.content
@@ -444,15 +449,26 @@ function DashBoard({nodeContents}){
   return <div style={{display : "flex"}}>
     <Content id="contentNodes" style={{visibility : cntShow ? "visible" : "hidden", display : cntShow ? "grid" : "none"}}>
       <div id="image">
-        <input type="file" accept="image/*" id="imageInput" multiple={true} style={{display:"none"}} onChange={() => {}}></input>
-        <label onClick={() => document.getElementById("imageInput").click()}>{changeVal.src}</label>
+        <input type="file" accept="image/*" id="imageInput" multiple={true} style={{display:"none"}} onChange={e => {
+            const file = e.target.files[0];
+            if (file){
+              file.arrayBuffer().then(x => {
+                updateContent({"file-type" : file.type, buffer : Buffer.from(x), name : file.name}, "file")
+              })
+
+              updateContent(file.name, "src")
+            }
+
+          }
+        }></input>
+        <label onClick={() => document.getElementById("imageInput").click()}>{changeVal.src }</label>
       </div>
 
       <div id="top">
         <input type="text" placeholder="Name :" onChange={e => updateContent(e.target.value, "name")}id={"inputName"}/>
         <select onChange={e => updateContent(e.target.value, "locage")}>
           <option value={"drawings"}>drawings</option>
-          <option value={"ux/ui"}>ux/ui</option>
+          <option value={"ux|ui"}>ux|ui</option>
           <option value={"programs"}>programs</option>
         </select>
       </div>
@@ -461,7 +477,7 @@ function DashBoard({nodeContents}){
 
       <div id="bottom">
         <button onClick={outAll}>cancel</button>
-        <button onClick={() => setLContent(true)} style={{background : "#95fea1", borderColor : "#95fea1", color : "black"}}>save</button>
+        <button onClick={postNode} style={{background : "#95fea1", borderColor : "#95fea1", color : "black"}}>save</button>
       </div>
     </Content>
 
@@ -486,7 +502,7 @@ function DashBoard({nodeContents}){
           }
         }>
           <option>none</option>
-          <option>ux/ui</option>
+          <option>ux|ui</option>
           <option>drawings</option>
           <option>programs</option>
         </select>
@@ -496,7 +512,7 @@ function DashBoard({nodeContents}){
       </Filter>
 
       <div>
-        <div style={{padding: "1em", display : "flex", gap : "1em"}}>
+        <div style={{padding: "1em", display : "flex", gap : "1em", flexWrap : "wrap"}}>
           { filterPos ? [nodeAdd, filterNode(nodes.reverse())] : [filterNode(nodes), nodeAdd] }
         </div>
 

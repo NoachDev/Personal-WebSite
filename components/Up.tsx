@@ -90,9 +90,9 @@ export class BarPdd extends Component<any>{
     return(
       <BaseBar>
         <ScrollingBar elm={String(this.props.locage*10)+"em"} className="slide" />
-        <ElementBar onClick={x => this.props.setLocage(0)}>programs</ElementBar>
-        <ElementBar onClick={x => this.props.setLocage(1)}>drawings</ElementBar>
-        <ElementBar onClick={x => this.props.setLocage(2)}>ux/ui</ElementBar>
+        <ElementBar onClick={x => this.props.setLocage("drawings")}>drawings</ElementBar>
+        <ElementBar onClick={x => this.props.setLocage("ux/ui")}>ux|ui</ElementBar>
+        <ElementBar onClick={x => this.props.setLocage("programs")}>programs</ElementBar>
       </BaseBar>
     )
   }

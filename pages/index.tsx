@@ -40,14 +40,22 @@ const ContainerDown = styled.div`
 
 `
 export async function getServerSideProps(context){
-  const locages = {"programs" : 0, "uxui" : 2};
+  const locages = {"programs" : 0, "ux|ui" : 2};
 
   return{
     props : {
-      val_locage : locages[context.query.l] || 1,
+      val_locage : context.query.l,
       elements : {}
     }
   }
+}
+
+async function uploadCards(openData){
+  // to do => api : feth data 
+  // 
+  const data : Object = await fetch("/api/images", {method : "GET"}).then(x => x.json())
+
+  return Object.values(data).map(x => <Card openData={openData} image={x.src}/>)
 }
 
 function HomePage({val_locage, elements}){
@@ -60,11 +68,7 @@ function HomePage({val_locage, elements}){
 
   const router = useRouter();
   
-  function uploadCards(){
-    // to do => api : feth data 
-    // <Card openData={openData} image={...}/>
-    return []
-  }
+  
 
   function openData(image){
     if (showData.current.state.visibility == "hidden"){
@@ -79,7 +83,21 @@ function HomePage({val_locage, elements}){
   }
 
   useEffect(() => {
-    setCards(locage in elements ? elements[locage] : elements[locage] = uploadCards())
+    console.log("in effect");
+    
+    if (locage in elements){
+      return setCards( elements[locage])
+    }
+
+    console.log("to upload");
+    
+    uploadCards(openData).then(x => {
+      elements[locage] = x
+      setCards(x)
+      console.log("end upload");
+
+    })
+
     }
   )
 
