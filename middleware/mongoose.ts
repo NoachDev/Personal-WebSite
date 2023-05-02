@@ -1,19 +1,40 @@
 import mongoose from "mongoose"
 
-export const HomeAdminConnect = (handler) => async function(req, res){
-  if (!mongoose.connections[0].readyState){
-    mongoose.connect(process.env.MONGO_DB_ADMIN_MAIN_URI + process.env.MONGO_DB_MAIN_CLUSTER + "Home" + process.env.MONGO_DB_URI_OPTS)
+function mongooseCheck(db : string) : boolean{
+  if (mongoose.connections[0].readyState){
+    if (mongoose.connections[0].name != db){
+      mongoose.connections[0].useDb(db)
+      return true
+
+    }
+
+    return true
   }
 
-  console.log("to handler");
-  
+  return false
+}
 
+async function mongooseMain(db : string, uri : string){
+  await mongoose.connect(uri + process.env.MONGO_DB_MAIN_CLUSTER + db + process.env.MONGO_DB_URI_OPTS)
+
+}
+
+export const UserConnect = (handler) => async function(req, res){
+  const db = "Users"
+
+  if (!mongooseCheck(db)){
+    await mongooseMain(db, process.env.MONGO_DB_USER_MAIN_URI)
+  }
+
+  req.body["user"] = false
   return handler(req, res)
 }
 
-export const HomePublicConnect = (handler) => async function(req, res){
-  if (!mongoose.connections[0].readyState){
-    mongoose.connect(process.env.MONGO_DB_PUBLIC_URI + process.env.MONGO_DB_MAIN_CLUSTER + "Home" + process.env.MONGO_DB_URI_OPTS)
+export const HomeAdminConnect = (handler) => async function(req, res){
+  const db = "Home"
+  
+  if (!mongooseCheck(db)){
+    await mongooseMain(db, process.env.MONGO_DB_ADMIN_MAIN_URI)
   }
 
   return handler(req, res)

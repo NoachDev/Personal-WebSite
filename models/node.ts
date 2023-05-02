@@ -20,6 +20,4 @@ const node = new Schema({
   content : String
 })
 
-
-mongoose.models = {}
-export const nodeModel = model("images", node)
+export const nodeModel = mongoose["images"] ?? model("images", node)

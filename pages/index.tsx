@@ -40,22 +40,19 @@ const ContainerDown = styled.div`
 
 `
 export async function getServerSideProps(context){
-  const locages = {"programs" : 0, "ux|ui" : 2};
 
   return{
     props : {
-      val_locage : context.query.l,
+      val_locage : context.query.l ?? "ux|ui",
       elements : {}
     }
   }
 }
 
-async function uploadCards(openData){
-  // to do => api : feth data 
-  // 
-  const data : Object = await fetch("/api/images", {method : "GET"}).then(x => x.json())
-
-  return Object.values(data).map(x => <Card openData={openData} image={x.src}/>)
+async function uploadCards(openData, locageName){
+  const data : Object = await fetch("/api/home", {method : "GET"}).then(x => x.json())
+  
+  return Object.values(data).filter(x => x.locage == locageName).map(x => <Card openData={openData} image={x.src}/>)
 }
 
 function HomePage({val_locage, elements}){
@@ -67,8 +64,6 @@ function HomePage({val_locage, elements}){
   const showLogin = useRef(null);
 
   const router = useRouter();
-  
-  
 
   function openData(image){
     if (showData.current.state.visibility == "hidden"){
@@ -91,7 +86,7 @@ function HomePage({val_locage, elements}){
 
     console.log("to upload");
     
-    uploadCards(openData).then(x => {
+    uploadCards(openData, locage).then(x => {
       elements[locage] = x
       setCards(x)
       console.log("end upload");
@@ -106,7 +101,7 @@ function HomePage({val_locage, elements}){
 
       <ContainerUp>
         <Logo/>
-        <BarPdd setVal={x => val_locage=x} val={val_locage} locage={locage} setLocage={setLocage}/>
+        <BarPdd locage={locage} setLocage={setLocage}/>
       </ContainerUp>
 
       <ContainerDown>

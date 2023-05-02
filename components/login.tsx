@@ -5,6 +5,7 @@ import styled from "styled-components";
 import login from "../public/acconts/login.png"
 import or from "../public/acconts/or.png"
 import close from "../public/close.svg"
+import { NextRouter } from "next/router";
 
 const Providers = styled.form.attrs((props : {view : string}) => props)`
   width               : 30em              ;
@@ -105,12 +106,17 @@ const AnyProvider = styled.div`
 
 
 `
-class Login extends Component<any, {visibility : string}>{
+
+class Login extends Component<{router : NextRouter, view : boolean}, {visibility : string}>{
+  static defaultProps = {
+    view : false,
+  }
+
   constructor(props){
     super(props)
 
     this.state = {
-      visibility : "hidden",
+      visibility : this.props.view ? "visible" : "hidden",
     }
 
   }
@@ -119,9 +125,16 @@ class Login extends Component<any, {visibility : string}>{
     this.setState({visibility : "visible"})
   }
   
-  handleSubimit(e, router){
+  handleSubimit(e, router : NextRouter){
     e.preventDefault()
-    router.push("/proposal")
+
+    const email : string = document.getElementById("email")["value"]
+    const password : string = document.getElementById("passwd")["value"]
+
+    const path : string = String(router.query.back ?? "proposal")
+
+    router.push("/"+path)
+
   }
 
   render(): ReactNode {
@@ -151,7 +164,8 @@ class Login extends Component<any, {visibility : string}>{
         <Image src={or} alt="noach" id="acconts"/>
 
         <ListProviders>
-          <input style={{height: "1.7em", borderRadius:"0.3em", border:"1px solid"}}/>
+          <input id={"email"} type="email" style={{height: "1.7em", borderRadius:"0.3em", border:"1px solid"}}/>
+          <input id={"passwd"} type="password" style={{height: "1.7em", borderRadius:"0.3em", border:"1px solid"}}/>
         </ListProviders>
 
         <button id="subimit" type="submit" >

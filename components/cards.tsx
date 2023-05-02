@@ -38,15 +38,13 @@ const Container = styled.div`
   
 `
 const Glass = styled.div.attrs((props : {view : string}) => props)`
-  // background : white;
-
   background-image    : radial-gradient(
     farthest-corner at 100% 0%,
-    rgba(255, 255, 255, 0.7) 0%,
-    transparent
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(0, 0, 0, 0.7)
   );
 
-  backdrop-filter     : blur(2px)         ;
+  backdrop-filter     : blur(3px)         ;
 
   width               : 70em              ;
   height              : 35em              ;
@@ -67,6 +65,7 @@ const Glass = styled.div.attrs((props : {view : string}) => props)`
   border-radius       : 0.5em             ;
 
   overflow            : hidden            ;
+  color               : rgb(210, 210, 210); 
 
   z-index             : 10                ;
 
@@ -134,8 +133,9 @@ const Glass = styled.div.attrs((props : {view : string}) => props)`
   }
 
 `
-export class Card extends Component<any>{
+export class Card extends Component<{openData : any, image : string}>{
   render(): ReactNode {
+    console.log("my image", this.props.image)
     return(
       <Container onClick={x => this.props.openData(this.props.image)}>
         <Image src={info} id="info" alt=""/>
@@ -158,7 +158,7 @@ export class DataCard extends Component<any, {visibility: string}>{
   render(): ReactNode {
     return(
       <Glass view={this.state.visibility}>
-        {this.props.image ? <Image src={this.props.image} alt={""} id="image"/> : <div id="image"/> }
+        {this.props.image ? <Image src={this.props.image} width = {500} height = {500} alt={""} id="image"/> : <div id="image"/> }
 
         <div id="right">
           <p id={"name"}>

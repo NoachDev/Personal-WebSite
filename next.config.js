@@ -7,6 +7,10 @@ module.exports = {
     styledComponents: true,
   },
 
+  images : {
+    domains : ["xcjbgqazgnnrhfexsscs.supabase.co"]
+  },
+
   async headers() {
 
     return [
