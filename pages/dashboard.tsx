@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import styled from "styled-components"
 import Image from "next/image"
-import { useRouter } from "next/router"
 
 import close from "../public/close-p.svg"
 
@@ -11,8 +10,7 @@ import toRight from "../public/dashboard/right-align.svg"
 
 import { nodeInterface } from "../models/node"
 
-import { getNode } from "./api/images"
-import { HomePublicConnect } from "../middleware/mongoose"
+import nodeImage from "./api/home"
 
 const Node = styled.div`
   background: #2E2E2E;
@@ -290,20 +288,14 @@ const Delete = styled.div`
 
 `
 export async function getServerSideProps(){
-  
   return {
     props : {
-      nodeContents : await HomePublicConnect(getNode)(null, null).then((x : Object) => x, () => {}) ?? {}
-
+      nodeContents : await nodeImage(null, null).then((x : Object) => x, () => {}) ?? {}
     }
   }
 }
 
 function DashBoard({nodeContents}){
-
-  const admin_test = true;
-
-  const router = useRouter();
 
   const [cntShow, setCShow] = useState(false);
   const [delShow, setDShow] = useState(false);
@@ -409,14 +401,6 @@ function DashBoard({nodeContents}){
 
     apiNodes.open("POST", "/api/images")
     apiNodes.send(JSON.stringify(newContent))
-  }
-
-  if (!admin_test){
-    useEffect(() => {
-      router.push("/")
-    })
-
-    return <></>
   }
 
   useEffect(() => {
