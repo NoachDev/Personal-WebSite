@@ -40,14 +40,19 @@ const ContainerDown = styled.div`
 
 `
 export async function getServerSideProps(context){
-  const locages = {"programs" : 0, "uxui" : 2};
 
   return{
     props : {
-      val_locage : locages[context.query.l] || 1,
+      val_locage : context.query.l ?? "ux|ui",
       elements : {}
     }
   }
+}
+
+async function uploadCards(openData, locageName){
+  const data : Object = await fetch("/api/home", {method : "GET"}).then(x => x.json())
+  
+  return Object.values(data).filter(x => x.locage == locageName).map(x => <Card openData={openData} image={x.src}/>)
 }
 
 function HomePage({val_locage, elements}){
@@ -59,12 +64,6 @@ function HomePage({val_locage, elements}){
   const showLogin = useRef(null);
 
   const router = useRouter();
-  
-  function uploadCards(){
-    // to do => api : feth data 
-    // <Card openData={openData} image={...}/>
-    return []
-  }
 
   function openData(image){
     if (showData.current.state.visibility == "hidden"){
@@ -79,7 +78,21 @@ function HomePage({val_locage, elements}){
   }
 
   useEffect(() => {
-    setCards(locage in elements ? elements[locage] : elements[locage] = uploadCards())
+    console.log("in effect");
+    
+    if (locage in elements){
+      return setCards( elements[locage])
+    }
+
+    console.log("to upload");
+    
+    uploadCards(openData, locage).then(x => {
+      elements[locage] = x
+      setCards(x)
+      console.log("end upload");
+
+    })
+
     }
   )
 
@@ -88,7 +101,7 @@ function HomePage({val_locage, elements}){
 
       <ContainerUp>
         <Logo/>
-        <BarPdd setVal={x => val_locage=x} val={val_locage} locage={locage} setLocage={setLocage}/>
+        <BarPdd locage={locage} setLocage={setLocage}/>
       </ContainerUp>
 
       <ContainerDown>

@@ -104,47 +104,62 @@ const Content = styled.div`
   }
 
 `
-export class MsgDocument extends Component<{file : any, key : number, setFile : any}>{
+export class Msg extends Component<{side : string, typeElm : string, content : string, key : number, setFile : any}, {fail : boolean}>{
+  
+  constructor(props){
+    super(props)
+    
+    this.state = {
+      fail : false
+    }
+  }
+  
+  static defaultProps = {
+    setFile: null,
+  };
+
+  setFail(){
+    this.setState({fail : true})
+  }
 
   render(): ReactNode {
-    return (
-      <Content className = "right" key={this.props.key} onClick={() => this.props.setFile(this.props.file)}>
-        <div style={{display:"flex", alignItems:"center"}}>
+    let element : JSX.Element
+
+    switch (this.props.typeElm) {
+      case "image":
+        const image = typeof this.props.content != "string" ?  URL.createObjectURL(this.props.content) : this.props.content;
+
+        element = <Image style={{objectFit : "contain", height:"auto"}} src={image} onClick={() => this.props.setFile([image, this.props.content])} width = {320} height = {320} alt = "image"/>
+
+        break;
+
+
+      case "document":
+        const file : any = typeof this.props.content == "string" ? null : this.props.content;
+
+         element = <div style={{display:"flex", alignItems:"center"}} onClick={() => this.props.setFile(file)}>
           <Image src={document_show} style={{width : "5em", height:"auto"}} alt="SVG Repo"/>
-          <label className = "value" style={{paddingRight:"1em"}}>{this.props.file.name}</label>
+          <label className = "value" style={{paddingRight:"1em"}}>{file.name}</label>
         </div>
-      </Content>
 
-    )
-  }
-}
-
-export class MsgImage extends Component<{file : any, key : number, setFile : any}>{
-
-  render(): ReactNode {
-    const image = URL.createObjectURL(this.props.file)
+        break;
+    
+      default:
+        element = <label className = "value" >{this.props.content}</label>
+        break;
+    }
 
     return (
-      <Content className = "right" key={this.props.key}>
-        <Image style={{objectFit : "contain", height:"auto"}} src={image} onClick={() => this.props.setFile([image, this.props.file])} width = {320} height = {320} alt = "image"/>
-      </Content>
+      <Content className = {this.props.side} key = {this.props.key} style={{background : this.state.fail ? "#C54242" : null}}>
 
-    )
-  }
-}
-
-export class MsgText extends Component<{side : string, content : string, key : number}>{
-
-  render(): ReactNode {
-    return (
-      <Content className = {this.props.side} key = {this.props.key}>
-        <label className = "value" >{this.props.content}</label>
+        { element }
+        
       </Content>
     )
   }
 }
 
-export class Contact extends Component<{name : string, lestMsg : string, finished : boolean, image : any, onClick : any}>{
+export class Contact extends Component<{name : string, lestMsg : string, finished : boolean, image : string, onClick : any}>{
 
   render(): ReactNode {
     return (
@@ -168,7 +183,7 @@ export class Contact extends Component<{name : string, lestMsg : string, finishe
   }
 }
 
-export class Paper extends Component<{msgs : Array<any>, setMsgs : any, setFile : any}, {visibility : boolean}>{
+export class Paper extends Component<{msgs : Array<any>, setMsgs : any, setFile : any, sendMsg : any}, {visibility : boolean}>{
   constructor(props){
     super(props)
 
@@ -185,20 +200,26 @@ export class Paper extends Component<{msgs : Array<any>, setMsgs : any, setFile 
     this.setState({visibility : false})
   }
 
-  addFiles(imagesRef : HTMLInputElement, TypeMsg : any){
-    const files : Array<any> = Array.from(imagesRef.files);
+  addFiles(imputElm : HTMLInputElement, typeElm : string){
+    const files : Array<any> = Array.from(imputElm.files);
 
     if (files.length <= 4){
       const newElements = []
 
-      files.forEach( file => newElements.push(
-        <TypeMsg file={file} key={this.props.msgs.length} setFile={this.props.setFile}/>
-      ))
+      
+      files.forEach( file => {
+          this.props.sendMsg(typeElm, file);
 
-      this.props.setMsgs(this.props.msgs.concat(newElements));
+          newElements.push(
+            <Msg side="right" typeElm={typeElm} content={file} key={this.props.msgs.length} setFile={this.props.setFile}/>
+          )
+        }
+      )
+
+      this.props.setMsgs(prev => [...prev, ...newElements]);
     }
     
-    imagesRef["value"] = "";
+    imputElm["value"] = "";
     
     this.showMySelf()
   }
@@ -207,10 +228,10 @@ export class Paper extends Component<{msgs : Array<any>, setMsgs : any, setFile 
     return(
       <PaperContainer id="paper" style={{visibility : this.state.visibility ? "visible" : "hidden"}}>
 
-        <input type="file" onChange={e => this.addFiles(e.target, MsgImage)} accept="image/*" id="imageInput" multiple={true} style={{display:"none"}}></input>
+        <input type="file" onChange={e => this.addFiles(e.target, "image")} accept="image/*" id="imageInput" multiple={true} style={{display:"none"}}></input>
         <Image src={camera} alt="SVG Repo" onClick={() => document.getElementById('imageInput').click()} style={{width:"100%", height:"100%"}}/>
 
-        <input type="file" accept=".txt .doc .pdf" onChange={e => this.addFiles(e.target, MsgDocument)} id="fileInput" multiple={true} style={{display:"none"}}></input>
+        <input type="file" accept=".txt .doc .pdf" onChange={e => this.addFiles(e.target, "document")} id="fileInput" multiple={true} style={{display:"none"}}></input>
         <Image src={document_add} alt="SVG Repo" onClick={() => document.getElementById('fileInput').click()} style={{width:"100%", height:"100%"}}/>
 
         <Image src={bitcoin} alt="SVG Repo" style={{width:"110%", height:"110%"}}/>

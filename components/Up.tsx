@@ -85,14 +85,26 @@ export class Logo extends Component<any>{
   }
 }
 
-export class BarPdd extends Component<any>{
+export class BarPdd extends Component<{locage : string, setLocage : any}>{
+  getPos(){
+    switch (this.props.locage){
+      case "drawings":
+        return 0
+
+      case "ux|ui":
+        return 10
+      
+      case "programs":
+        return 20
+    }
+  }
   render(): ReactNode {
     return(
       <BaseBar>
-        <ScrollingBar elm={String(this.props.locage*10)+"em"} className="slide" />
-        <ElementBar onClick={x => this.props.setLocage(0)}>programs</ElementBar>
-        <ElementBar onClick={x => this.props.setLocage(1)}>drawings</ElementBar>
-        <ElementBar onClick={x => this.props.setLocage(2)}>ux/ui</ElementBar>
+        <ScrollingBar elm={String(this.getPos())+"em"} className="slide" />
+        <ElementBar onClick={x => this.props.setLocage("drawings")}>drawings</ElementBar>
+        <ElementBar onClick={x => this.props.setLocage("ux|ui")}>ux|ui</ElementBar>
+        <ElementBar onClick={x => this.props.setLocage("programs")}>programs</ElementBar>
       </BaseBar>
     )
   }

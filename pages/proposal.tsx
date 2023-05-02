@@ -184,6 +184,12 @@ const Layout = styled.div`
   }
 
 `
+export async function getServerSideProps({req}){
+  return {
+    props : {}
+  }
+  
+} 
 
 function Project(){
   const router = useRouter()
