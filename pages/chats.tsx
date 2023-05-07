@@ -20,9 +20,8 @@ import send from "../public/send.svg"
 
 import getMsgs from "./api/chat";
 import { userInterface } from "../models/users";
-import { userCheck } from "../lib/auth";
 import { NextResponse } from "next/server";
-import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
+import { mongoDb } from "../lib/clients";
 
 const Middle = styled.div`
   display           : flex                    ;
@@ -95,11 +94,10 @@ const Middle = styled.div`
 `
 
 export async function getServerSideProps({req}){
+
   console.log("my req", req.method);
   
-  const user = await userCheck(req)
-
-  const props = user === null ? {
+  const props = true === null ? {
     redirect : {
       destination: '/login?back=chats',
       permanent: false,
@@ -107,7 +105,7 @@ export async function getServerSideProps({req}){
   } : {
     props : {
       cnts : await getMsgs(req, NextResponse.next()).then(x => x.json()),
-      admin : user
+      admin : true
     }
   }
   

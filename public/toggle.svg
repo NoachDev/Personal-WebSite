@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="32"
+   height="32"
+   viewBox="0 0 8.4666664 8.4666666"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   sodipodi:docname="toggle.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="7.2407734"
+     inkscape:cx="14.43216"
+     inkscape:cy="31.557402"
+     inkscape:window-width="1160"
+     inkscape:window-height="808"
+     inkscape:window-x="627"
+     inkscape:window-y="47"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="Camada 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#ffffff;fill-opacity:0.8;fill-rule:evenodd;stroke:none;stroke-width:0.0791104;stroke-linecap:square;paint-order:markers fill stroke"
+       id="rect234"
+       width="5.3216391"
+       height="0.48852822"
+       x="1.5725138"
+       y="3.8716309"
+       ry="0.24426411" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.8;fill-rule:evenodd;stroke:none;stroke-width:0.0791104;stroke-linecap:square;paint-order:markers fill stroke"
+       id="rect236"
+       width="5.3216391"
+       height="0.48852822"
+       x="1.5725138"
+       y="5.9725828"
+       ry="0.24426411" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.8;fill-rule:evenodd;stroke:none;stroke-width:0.0791104;stroke-linecap:square;paint-order:markers fill stroke"
+       id="rect346"
+       width="5.3216391"
+       height="0.48852822"
+       x="1.5725138"
+       y="1.7706791"
+       ry="0.24426411" />
+  </g>
+</svg>

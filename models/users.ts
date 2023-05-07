@@ -27,6 +27,5 @@ const userMsg = new Schema({
   type : String
 })
 
-mongoose.models = {}
 export const headModel = model("heads", userHead)
 export const userModel = (cll : string) => model(cll, userMsg)

@@ -1,24 +1,37 @@
 import { NextApiRequest, NextApiResponse } from "next"
-import { mongoDb } from "../../lib/clients"
+import { clientMongoDb } from "../../lib/clients"
+
+export async function getData(collection : string){
+  let data = {}
+
+  const client = clientMongoDb()
+
+  try{
+    await client.connect()
+    
+    const result = await client.db("Home").collection(collection).find().toArray()
+    result.forEach((val, index) => { data[index] = {...val, _id : val["_id"].toJSON() } } )
+
+  }
+
+  finally{
+    client.close()
+  }
+
+  return data
+}
 
 export async function handler(req : NextApiRequest, res : NextApiResponse){
-
-  let data = {}
   
-  await mongoDb.connect()
+  const body = JSON.parse(req.body)
 
-  const result : Array<Object>= await mongoDb.db("Home").collection("images").find({}).toArray()
+  res.setHeader('Cache-Control', 's-maxage=86400');
 
-  result.forEach((val, index) => { data[index] = {...val, _id : val["_id"].toJSON() } } )
-
-  if (res === null){
-    return data
-  }
-  
-  await mongoDb.close()
-  
-  res.status(200).json(data)
+  res.status(200)
+  res.json(await getData(body.collection))
   res.end()
+
+  return res
 }
 
 export default handler
