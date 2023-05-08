@@ -5,25 +5,12 @@ import info from "../public/info.svg"
 import buy from "../public/buy.svg"
 import close from "../public/close.svg"
 
-import { HomeBrand, DiskContainer } from "../styles/home/page"
+import { HomeBrand } from "../styles/home/page"
 import { ContainerCard, Glass } from "../styles/home/card"
 
-import iconl from "../public/iconLogo_250.jpg"
 import Link from "next/link"
 
 import toggle from "../public/toggle.svg"
-
-export class Logo extends Component{
-  render(): ReactNode {
-
-    return (
-      <DiskContainer>
-        <Image src={iconl} alt="" id={"logo"}></Image>
-      </DiskContainer>
-
-    )
-  }
-}
 
 export class BrandPages extends Component<{}, { opcity : number}>{
   constructor(props){

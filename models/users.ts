@@ -11,11 +11,13 @@ export interface userInterface{
   finished : boolean,
   image : string,
   msgs : Array<msgInterface>,
+  _sb : String,
   _id : string
 }
 
 const userHead = new Schema({
   _id : ObjectId,
+  _sb : String,
   name : String,
   finished : Boolean,
   image : String,
@@ -27,5 +29,14 @@ const userMsg = new Schema({
   type : String
 })
 
+const userProposal = new Schema({
+  type : String, // admin | user
+  content : String,
+  name : String,
+  files : Array<String>
+})
+
+mongoose.models = {}
 export const headModel = model("heads", userHead)
 export const userModel = (cll : string) => model(cll, userMsg)
+export const proposalModel = (cll : string) => model(cll, userProposal)

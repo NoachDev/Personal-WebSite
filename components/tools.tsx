@@ -1,3 +1,5 @@
+import noUser from "../public/user.svg"
+
 import Image from "next/image";
 
 import { CSSProperties, Component, ReactNode } from "react";
@@ -12,6 +14,7 @@ import { FormSubimit, Line, Provider, Providers } from "../styles/login";
 import { SocialAuth } from "@supabase/auth-ui-react";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
+import { DiskIcon } from "../styles/tools";
 
 export const SideBars = styled.div`
   width               : 21%                   ;
@@ -339,6 +342,16 @@ export class Login extends Component<{router : NextRouter, supabaseClient : Supa
         <Image src={close} alt="" id="close" onClick={this.hiddenMySelf}/>
 
       </Providers>
+    )
+  }
+}
+
+export class UserIcon extends Component<{image : string | any, color? : string, size? : number, border? : string}>{
+  render(): ReactNode {
+    return (
+      <DiskIcon id="disk" color = {this.props.color} size = {this.props.size} border = {this.props.border}>
+        <Image id="icon" src={this.props.image ?? noUser} alt=""/>
+      </DiskIcon>
     )
   }
 }

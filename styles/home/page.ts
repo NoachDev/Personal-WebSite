@@ -32,6 +32,10 @@ export const Up = styled.div`
     height : 30%;
     gap: 2em;
 
+    #disk{
+      width               : 20% ;
+      height              : auto;
+    }
   }
 
 `
@@ -87,33 +91,6 @@ export const HomeBrand = styled.div.attrs((props : {opacity : number}) => props)
   .showContent{
     transition: 0.5s;
     opacity: ${props => props.opacity};
-  }
-
-`
-export const DiskContainer = styled.div`
-  width           : 8em  ;
-  height          : 8em  ;
-
-  border-style    : solid    ;
-  border-radius   : 100%     ;
-  border-color    : #C54242  ;
-  
-  display         : flex     ;
-
-  justify-content : center   ;
-  align-items     : center   ;
-
-  overflow        : hidden   ;
-
-  #logo{
-    width : 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-
-  @media (max-width: ${props => props.theme.devices.mobile}) {
-    width               : 20% ;
-    height              : auto;
   }
 
 `

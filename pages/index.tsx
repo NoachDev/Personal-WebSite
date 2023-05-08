@@ -1,11 +1,13 @@
-import { useEffect, useRef, useState } from "react"
-import {BrandPages, Card, DataCard, Logo} from "../components/home";
 import homeImage from "../public/wp4511654-scenery-night-digital-art-wallpapers.jpg"
+import iconl from "../public/iconLogo_250.jpg"
+
+import { useEffect, useRef, useState } from "react"
+import {BrandPages, Card, DataCard} from "../components/home";
 
 import { Down, Home, Up } from "../styles/home/page";
 import { BaseBar, ElementBar, ScrollingBar} from "../styles/home/bar";
 
-import { Login } from "../components/tools";
+import { Login, UserIcon } from "../components/tools";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 
 import {getData as apiHome} from "./api/home"
@@ -116,7 +118,7 @@ function HomePage({val_locage, cards}){
       <BrandPages/>
 
       <Up onClick={closeCurrent}>
-        <Logo/>
+        <UserIcon image={iconl} color="#c54242" size={8} border={"3px"}/>
 
         <BaseBar>
           <ScrollingBar elm={getPos()} className="slide" />

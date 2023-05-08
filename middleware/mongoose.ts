@@ -21,19 +21,10 @@ async function mongooseMain(db : string, uri : string){
 
 }
 
-export const UserConnect = (handler) => async function(req, res){
-  const db = "Users"
-
-  await mongooseMain(db, process.env.MONGO_DB_USER_MAIN_URI)
-  
-  req.body["user"] = false
+const mainMiddleWare = (db, uri, handler) => async function(req, res){
+  await mongooseMain(db, uri)
   return handler(req, res)
 }
 
-export const HomeAdminConnect = (handler) => async function(req, res){
-  const db = "Home"
-  
-  await mongooseMain(db, process.env.MONGO_DB_ADMIN_MAIN_URI)
-
-  return handler(req, res)
-}
+export const UserConnect = (handler) => mainMiddleWare("Users", process.env.MONGO_DB_USER_MAIN_URI, handler)
+export const HomeAdminConnect = (handler) => mainMiddleWare("Home", process.env.MONGO_DB_ADMIN_MAIN_URI, handler)
